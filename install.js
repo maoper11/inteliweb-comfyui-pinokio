@@ -39,17 +39,36 @@ module.exports = async (kernel, info) => {
       }
     },
 
-    // 5) Install python deps (add requests to avoid prestartup failure)
+    // 5.1) Crear venv con Python
+    {
+      method: "shell.run",
+      params: {
+        path: "app",
+        message: [
+          // Elegir versión objetivo
+          "uv python install 3.12",
+
+          // Borrar venv (cross-platform)
+          "{{ platform === 'win32' ? 'if exist env rmdir /s /q env' : 'rm -rf env' }}",
+
+          // Crear venv con la versión elegida
+          "uv venv --python 3.12 env",
+        ],
+      },
+    },
+
+    // 5.2) Instalar requisitos base de ComfyUI usando ese venv
     {
       method: "shell.run",
       params: {
         venv: "env",
         path: "app",
         message: [
+          "uv pip install -U pip setuptools wheel",
           "uv pip install -r requirements.txt",
-          "uv pip install -U requests bitsandbytes"
-        ]
-      }
+          "uv pip install -U bitsandbytes",
+        ],
+      },
     },
 
     // 6) Install Torch (variant-based) - NO xformers/flash/sage for now
@@ -84,7 +103,11 @@ module.exports = async (kernel, info) => {
           hypernetworks: "app/models/hypernetworks",
           gligen: "app/models/gligen",
           style_models: "app/models/style_models",
-          photomaker: "app/models/photomaker"
+          photomaker: "app/models/photomaker",
+          diffusion_models: "app/models/diffusion_models",
+          text_encoders: "app/models/text_encoders"
+
+
         },
         peers: [
           "https://github.com/cocktailpeanut/fluxgym.git",
@@ -105,18 +128,18 @@ module.exports = async (kernel, info) => {
     },
 
     // 8) Optional Flux Schnell autodownload
-    {
-      when: "{{['true','1'].includes(String(env.FLUX_AUTODOWNLOAD).toLowerCase())}}",
-      method: "script.start",
-      params: {
-        uri: "hf.json",
-        params: {
-          repo: "Comfy-Org/flux1-schnell",
-          files: "flux1-schnell-fp8.safetensors",
-          path: "app/models/checkpoints"
-        }
-      }
-    },
+    // {
+    //   when: "{{['true','1'].includes(String(env.FLUX_AUTODOWNLOAD).toLowerCase())}}",
+    //   method: "script.start",
+    //   params: {
+    //     uri: "hf.json",
+    //     params: {
+    //       repo: "Comfy-Org/flux1-schnell",
+    //       files: "flux1-schnell-fp8.safetensors",
+    //       path: "app/models/checkpoints"
+    //     }
+    //   }
+    // },
 
     // 9) First launch to print local URL and stop
     {

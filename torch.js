@@ -19,9 +19,22 @@ module.exports = {
     // WINDOWS NVIDIA
     // ============================================================
 
-    // auto OR explicit 2.9.1-cu128
+    // auto OR explicit 2.10.0-cu130 
     {
-      when: "{{platform === 'win32' && gpu === 'nvidia' && (['','auto','2.9.1-cu128'].includes(String(env.TORCH_VARIANT||'auto').toLowerCase()))}}",
+      when: "{{platform === 'win32' && gpu === 'nvidia' && (['','auto','2.10.0-cu130'].includes(String(env.TORCH_VARIANT||'auto').toLowerCase()))}}",
+      method: "shell.run",
+      params: {
+        venv: "{{args && args.venv ? args.venv : null}}",
+        path: "{{args && args.path ? args.path : '.'}}",
+        message: [
+          "python -m pip install torch==2.10.0 torchvision==0.25.0 torchaudio==2.10.0 --index-url https://download.pytorch.org/whl/cu130 --force-reinstall --no-deps"
+        ]
+      }
+    },
+
+    // explicit 2.9.1-cu128
+    {
+      when: "{{platform === 'win32' && gpu === 'nvidia' && (String(env.TORCH_VARIANT||'').toLowerCase() === '2.9.1-cu128')}}",
       method: "shell.run",
       params: {
         venv: "{{args && args.venv ? args.venv : null}}",
@@ -41,19 +54,6 @@ module.exports = {
         path: "{{args && args.path ? args.path : '.'}}",
         message: [
           "python -m pip install torch==2.7.0 torchvision==0.22.0 torchaudio==2.7.0 --index-url https://download.pytorch.org/whl/cu128 --force-reinstall --no-deps"
-        ]
-      }
-    },
-
-    // explicit 2.10.0-cu130  (requested)
-    {
-      when: "{{platform === 'win32' && gpu === 'nvidia' && (String(env.TORCH_VARIANT||'').toLowerCase() === '2.10.0-cu130')}}",
-      method: "shell.run",
-      params: {
-        venv: "{{args && args.venv ? args.venv : null}}",
-        path: "{{args && args.path ? args.path : '.'}}",
-        message: [
-          "python -m pip install torch==2.10.0 torchvision==0.25.0 torchaudio==2.10.0 --index-url https://download.pytorch.org/whl/cu130 --force-reinstall --no-deps"
         ]
       }
     },
