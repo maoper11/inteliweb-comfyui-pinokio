@@ -3,125 +3,80 @@
 # Inteliweb AI - Install options
 # ============================
 
-##########################################################################
 # ComfyUI version to checkout:
-# - main
-# - a tag (e.g. v0.10.0)
+# - master  (default branch in ComfyUI repo)
+# - main    (allowed here; installer will fallback to master automatically)
+# - a tag (e.g. v0.3.47 or v0.10.0)
 # - a commit hash (e.g. 1a2b3c4)
 ##########################################################################
-COMFY_REF=main
+COMFY_REF=master
 
 ##########################################################################
 # Torch variant (user friendly):
 #
 # Recommended:
-# - auto              (default: picks best for your OS/GPU)
-# - 2.7.0-cu128       (NVIDIA, CUDA 12.8)
-# - 2.9.1-cu128       (NVIDIA, CUDA 12.8)
-# - 2.10.0-cu130      (NVIDIA, CUDA 13.0)
-# - 2.7.0-rocm6.3     (Linux AMD ROCm 6.3)
-# - directml          (Windows AMD DirectML)
-# - cpu               (CPU only)
+# - auto (default): picks best for your OS/GPU
 #
-# Notes:
-# - On Windows AMD, use: directml
-# - On Linux AMD, use: 2.7.0-rocm6.3
+# NVIDIA:
+# - 2.7.0-cu128
+# - 2.9.1-cu128
+# - 2.10.0-cu130
+#
+# AMD:
+# - directml        (Windows AMD)
+# - 2.7.0-rocm6.3   (Linux AMD)
+#
+# CPU:
+# - cpu
 ##########################################################################
 TORCH_VARIANT=auto
 
-
+##########################################################################
+# Download Flux Schnell automatically (optional)
+##########################################################################
+FLUX_AUTODOWNLOAD=true
 
 ##########################################################################
-#
 # PINOKIO_SCRIPT_AUTOLAUNCH
-# the relative file path for auto launching any script
-# the specified script will automatically run when pinokio first launches
-#
 ##########################################################################
 PINOKIO_SCRIPT_AUTOLAUNCH=
 
 ##########################################################################
-#
 # PINOKIO_SHARE_CLOUDFLARE
-# Set this variable to share the app publicly via cloudflare tunnel.
-#
 ##########################################################################
 PINOKIO_SHARE_CLOUDFLARE=false
 
 ##########################################################################
-#
 # PINOKIO_SHARE_PASSCODE
-#
-# By default, your publicly shared app will be 100% open to anyone
-# with the link via Cloudflare.
-#
-# You can add authorization by protecting it with a passcode.
-# Set this value, and any access to the app will require a pass code input
-#
 ##########################################################################
 PINOKIO_SHARE_PASSCODE=
 
 ##########################################################################
-#
 # PINOKIO_SCRIPT_DEFAULT
-# If this variable is false, 'default': true menu items in pinokio.js
-# will NOT automatically run
-#
 ##########################################################################
 PINOKIO_SCRIPT_DEFAULT=true
 
 ##########################################################################
-#
 # GRADIO_TEMP_DIR
-# All the files uploaded through gradio goes here.
-#
-# Delete this line to store the files under PINOKIO_HOME/cache/GRADIO_TEMPDIR
-# or change the path if you want to use a different path
-#
 ##########################################################################
 GRADIO_TEMP_DIR=./cache/GRADIO_TEMP_DIR
 
 ##########################################################################
-#
 # HF_HOME
-#
-# Huggingface cache
-# All the model files automatically downloaded through libraries like
-# diffusers, transformers, etc. will be stored under this path
-#
-# You can save disk space by deleting this line, which will store all
-# huggingface files under PINOKIO_HOME/cache/HF_HOME without redundancy.
-#
 ##########################################################################
 HF_HOME=./cache/HF_HOME
 
 ##########################################################################
-#
 # TORCH_HOME
-#
-# Torch hub cache
-# All the files automatically downloaded by pytorch will be stored here
-#
-# You can save disk space by deleting this line, which will store all
-# torch hub files under PINOKIO_HOME/cache/TORCH_HOME without redundancy.
-#
 ##########################################################################
 TORCH_HOME=./cache/TORCH_HOME
 
 ##########################################################################
-#
 # PINOKIO_SHARE_LOCAL
-# Set this variable to true to share the app on the local network.
-#
 ##########################################################################
 PINOKIO_SHARE_LOCAL=false
 
 ##########################################################################
-#
 # PINOKIO_SHARE_LOCAL_PORT
-# Set this variable to use fixed port for the local network sharing feature
-# If not specified, a random port will be assigned to the local proxy used
-# for local sharing.
-#
 ##########################################################################
 PINOKIO_SHARE_LOCAL_PORT=

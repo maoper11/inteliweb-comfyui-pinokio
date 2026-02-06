@@ -1,19 +1,6 @@
-const arm64 = require('./initialize-models-mac-arm64')
-const nvidia = require('./initialize-models-nvidia')
-const d = require('./initialize-models-default')
-const flux = require('./download-flux-schnell-fp8.json')
-const flux_merged = require('./download-flux-merged-fp8.json')
-
 module.exports = async (kernel, info) => {
-  // lee selección desde pantalla Install -> Customize (ENVIRONMENT)
-  // COMFY_REF puede ser: main, tag (v0.3.35), commit hash
-  const comfyRef = "{{ (env.COMFY_REF && String(env.COMFY_REF).trim()) ? String(env.COMFY_REF).trim() : 'main' }}"
-
-  // TORCH_VARIANT puede ser: auto, cu128-2.7.0, cu128-2.9.1, rocm63-2.7.0, cpu, directml
-  const torchVariant = "{{ (env.TORCH_VARIANT && String(env.TORCH_VARIANT).trim()) ? String(env.TORCH_VARIANT).trim() : 'auto' }}"
-
-  let run = [
-    // 1) Clonar ComfyUI
+  const run = [
+    // 1) Clone ComfyUI into ./app
     {
       method: "shell.run",
       params: {
@@ -21,20 +8,20 @@ module.exports = async (kernel, info) => {
       }
     },
 
-    // 2) Checkout a la versión elegida
+    // 2) Checkout desired ref (robust for master/main/tag/commit)
     {
       method: "shell.run",
       params: {
         path: "app",
         message: [
           "git fetch --all --tags",
-          `git checkout ${comfyRef} || git checkout master || git checkout main`
+          // Try COMFY_REF first, then master, then main (so COMFY_REF=main works too)
+          "git checkout {{env.COMFY_REF || 'master'}} || git checkout master || git checkout main"
         ]
       }
     },
 
-
-    // 3) Extras (igual que tu script)
+    // 3) Optional examples repo (workflows)
     {
       method: "shell.run",
       params: {
@@ -42,6 +29,8 @@ module.exports = async (kernel, info) => {
         path: "workflows"
       }
     },
+
+    // 4) ComfyUI-Manager
     {
       method: "shell.run",
       params: {
@@ -50,7 +39,7 @@ module.exports = async (kernel, info) => {
       }
     },
 
-    // 4) Requirements (sin cambios)
+    // 5) Install python deps (add requests to avoid prestartup failure)
     {
       method: "shell.run",
       params: {
@@ -58,47 +47,46 @@ module.exports = async (kernel, info) => {
         path: "app",
         message: [
           "uv pip install -r requirements.txt",
-          "uv pip install -U bitsandbytes"
+          "uv pip install -U requests bitsandbytes"
         ]
       }
     },
 
-    // 5) Torch (ahora con variante)
+    // 6) Install Torch (variant-based) - NO xformers/flash/sage for now
     {
       method: "script.start",
       params: {
         uri: "torch.js",
         params: {
           venv: "env",
-          path: "app",
-          variant: torchVariant
+          path: "app"
         }
       }
     },
 
-    // 6) Links a drive (igual que tu script)
+    // 7) Link model folders to Pinokio drive
     {
-      "method": "fs.link",
-      "params": {
-        "drive": {
-          "checkpoints": "app/models/checkpoints",
-          "clip": "app/models/clip",
-          "clip_vision": "app/models/clip_vision",
-          "configs": "app/models/configs",
-          "controlnet": "app/models/controlnet",
-          "embeddings": "app/models/embeddings",
-          "loras": "app/models/loras",
-          "upscale_models": "app/models/upscale_models",
-          "vae": "app/models/vae",
-          "vae_approx": "app/models/VAE-approx",
-          "diffusers": "app/models/diffusers",
-          "unet": "app/models/unet",
-          "hypernetworks": "app/models/hypernetworks",
-          "gligen": "app/models/gligen",
-          "style_models": "app/models/style_models",
-          "photomaker": "app/models/photomaker"
+      method: "fs.link",
+      params: {
+        drive: {
+          checkpoints: "app/models/checkpoints",
+          clip: "app/models/clip",
+          clip_vision: "app/models/clip_vision",
+          configs: "app/models/configs",
+          controlnet: "app/models/controlnet",
+          embeddings: "app/models/embeddings",
+          loras: "app/models/loras",
+          upscale_models: "app/models/upscale_models",
+          vae: "app/models/vae",
+          vae_approx: "app/models/VAE-approx",
+          diffusers: "app/models/diffusers",
+          unet: "app/models/unet",
+          hypernetworks: "app/models/hypernetworks",
+          gligen: "app/models/gligen",
+          style_models: "app/models/style_models",
+          photomaker: "app/models/photomaker"
         },
-        "peers": [
+        peers: [
           "https://github.com/cocktailpeanut/fluxgym.git",
           "https://github.com/cocktailpeanutlabs/automatic1111.git",
           "https://github.com/cocktailpeanutlabs/fooocus.git",
@@ -107,16 +95,30 @@ module.exports = async (kernel, info) => {
         ]
       }
     },
+
+    // output link
     {
-      "method": "fs.link",
-      "params": {
-        "drive": {
-          "output": "app/output"
+      method: "fs.link",
+      params: {
+        drive: { output: "app/output" }
+      }
+    },
+
+    // 8) Optional Flux Schnell autodownload
+    {
+      when: "{{['true','1'].includes(String(env.FLUX_AUTODOWNLOAD).toLowerCase())}}",
+      method: "script.start",
+      params: {
+        uri: "hf.json",
+        params: {
+          repo: "Comfy-Org/flux1-schnell",
+          files: "flux1-schnell-fp8.safetensors",
+          path: "app/models/checkpoints"
         }
       }
     },
 
-    // 7) Start (igual que tu script)
+    // 9) First launch to print local URL and stop
     {
       method: "shell.run",
       params: {
@@ -129,44 +131,33 @@ module.exports = async (kernel, info) => {
         message: [
           "{{platform === 'win32' && gpu === 'amd' ? 'python main.py --directml' : 'python main.py'}}"
         ],
-        on: [{
-          "event": "/http:\\/\\/[a-zA-Z0-9.]+:[0-9]+/",
-          "kill": true
-        }, {
-          "event": "/errno/i",
-          "break": false
-        }, {
-          "event": "/error:/i",
-          "break": false
-        }]
+        on: [
+          { event: "/http:\\/\\/[a-zA-Z0-9.]+:[0-9]+/", kill: true },
+          { event: "/errno/i", break: false },
+          { event: "/error:/i", break: false }
+        ]
       }
     },
 
-    // 8) Workflows (igual que tu script)
+    // 10) Optional extra workflows
     {
       method: "shell.run",
       params: {
-        message: [
-          "git clone https://github.com/comfyanonymous/ComfyUI_examples"
-        ],
+        message: "git clone https://github.com/comfyanonymous/ComfyUI_examples",
         path: "app/user/default/workflows"
       }
     },
     {
       method: "shell.run",
       params: {
-        message: [
-          "git clone https://github.com/cocktailpeanut/comfy_json_workflow"
-        ],
+        message: "git clone https://github.com/cocktailpeanut/comfy_json_workflow",
         path: "app/user/default/workflows"
       }
     }
-  ]
+  ];
 
   return {
     run,
-    requires: {
-      bundle: "ai",
-    }
-  }
-}
+    requires: { bundle: "ai" }
+  };
+};
