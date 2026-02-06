@@ -4,19 +4,11 @@ module.exports = async (kernel, info) => {
     {
       method: "shell.run",
       params: {
-        message: "git clone https://github.com/comfyanonymous/ComfyUI app"
-      }
-    },
-
-    // 2) Checkout desired ref (robust for master/main/tag/commit)
-    {
-      method: "shell.run",
-      params: {
         message: "git clone --branch {{env.COMFY_REF || 'master'}} --depth 1 https://github.com/comfyanonymous/ComfyUI app"
       }
     },
 
-    // 3) Optional examples repo (workflows)
+    // 2) Optional examples repo (workflows)
     {
       method: "shell.run",
       params: {
@@ -25,7 +17,7 @@ module.exports = async (kernel, info) => {
       }
     },
 
-    // 4) ComfyUI-Manager
+    // 3) ComfyUI-Manager
     {
       method: "shell.run",
       params: {
@@ -34,7 +26,7 @@ module.exports = async (kernel, info) => {
       }
     },
 
-    // 5.1) Crear venv con Python
+    // 4) Crear venv con Python
     {
       method: "shell.run",
       params: {
@@ -52,7 +44,7 @@ module.exports = async (kernel, info) => {
       },
     },
 
-    // 5.2) Instalar requisitos base de ComfyUI usando ese venv
+    // 5) Instalar requisitos base de ComfyUI usando ese venv
     {
       method: "shell.run",
       params: {

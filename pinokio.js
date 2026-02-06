@@ -12,24 +12,12 @@ module.exports = {
       update: info.running("update.js"),
       reset: info.running("reset.js")
     }
-    let downloading = [
-      "download-flux-dev-gguf-q4-0.json",
-      "download-flux-schnell-gguf-q4-0.json",
-      "download-flux-dev-fp8.json",
-      "download-flux-dev-nf4.json",
-      "download-flux-dev.json",
-      "download-flux-merged-fp8.json",
+    let downloading = [      
       "download-flux-schnell-fp8.json",
-      "download-flux-schnell-nf4.json",
       "download-flux-schnell.json",
       "download-sdxl.json",
       "download-turbo.json",
-      "download-svd-xt-1.1.json",
-      "download-svd-xt.json",
-      "download-svd.json",
-      "download-lcm-lora.json",
       "download-sd15.json",
-      "download-sd21.json",
       "mochi-lite.json",
       "mochi-high.json",
       "ltx.json",

@@ -1,12 +1,16 @@
 ##########################################################################
-# ============================
-# Inteliweb AI - Install options
-# ============================
+# Inteliweb AI - ComfyUI Pinokio Installer
+# 
+# YouTube: https://www.youtube.com/@InteliwebAI
+#
+# Learn AI workflows, ComfyUI, virtual models & automation
+##########################################################################
+
+##########################################################################
+#
 # ComfyUI version to checkout:
-# - master  (default branch in ComfyUI repo)
-# - main    (allowed here; installer will fallback to master automatically)
-# - a tag (e.g. v0.3.47 or v0.10.0)
-# - a commit hash (e.g. 1a2b3c4)
+# - master  (latest version)
+# - a tag (e.g. v0.3.47 or v0.12.0)
 ##########################################################################
 COMFY_REF=master
 
