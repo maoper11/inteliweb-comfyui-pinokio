@@ -3,14 +3,38 @@ const nvidia = require('./initialize-models-nvidia')
 const d = require('./initialize-models-default')
 const flux = require('./download-flux-schnell-fp8.json')
 const flux_merged = require('./download-flux-merged-fp8.json')
+
 module.exports = async (kernel, info) => {
+  // lee selección desde pantalla Install -> Customize (ENVIRONMENT)
+  // COMFY_REF puede ser: main, tag (v0.3.35), commit hash
+  const comfyRef = "{{ (env.COMFY_REF && String(env.COMFY_REF).trim()) ? String(env.COMFY_REF).trim() : 'main' }}"
+
+  // TORCH_VARIANT puede ser: auto, cu128-2.7.0, cu128-2.9.1, rocm63-2.7.0, cpu, directml
+  const torchVariant = "{{ (env.TORCH_VARIANT && String(env.TORCH_VARIANT).trim()) ? String(env.TORCH_VARIANT).trim() : 'auto' }}"
+
   let run = [
+    // 1) Clonar ComfyUI
     {
       method: "shell.run",
       params: {
         message: "git clone https://github.com/comfyanonymous/ComfyUI app"
       }
     },
+
+    // 2) Checkout a la versión elegida
+    {
+      method: "shell.run",
+      params: {
+        path: "app",
+        message: [
+          "git fetch --all --tags",
+          `git checkout ${comfyRef} || git checkout master || git checkout main`
+        ]
+      }
+    },
+
+
+    // 3) Extras (igual que tu script)
     {
       method: "shell.run",
       params: {
@@ -25,6 +49,8 @@ module.exports = async (kernel, info) => {
         path: "app/custom_nodes"
       }
     },
+
+    // 4) Requirements (sin cambios)
     {
       method: "shell.run",
       params: {
@@ -36,6 +62,8 @@ module.exports = async (kernel, info) => {
         ]
       }
     },
+
+    // 5) Torch (ahora con variante)
     {
       method: "script.start",
       params: {
@@ -43,10 +71,12 @@ module.exports = async (kernel, info) => {
         params: {
           venv: "env",
           path: "app",
-          // xformers: true
+          variant: torchVariant
         }
       }
     },
+
+    // 6) Links a drive (igual que tu script)
     {
       "method": "fs.link",
       "params": {
@@ -85,18 +115,8 @@ module.exports = async (kernel, info) => {
         }
       }
     },
-    {
-      "when": "{{['true', '1'].includes(String(env.FLUX_AUTODOWNLOAD).toLowerCase())}}",      
-      "method": "script.start",
-      "params": {
-        "uri": "hf.json",
-        "params": {
-          "repo": "Comfy-Org/flux1-schnell",
-          "files": "flux1-schnell-fp8.safetensors",
-          "path": "app/models/checkpoints"
-        }
-      }
-    },
+
+    // 7) Start (igual que tu script)
     {
       method: "shell.run",
       params: {
@@ -110,7 +130,7 @@ module.exports = async (kernel, info) => {
           "{{platform === 'win32' && gpu === 'amd' ? 'python main.py --directml' : 'python main.py'}}"
         ],
         on: [{
-          "event": "/http:\/\/[a-zA-Z0-9.]+:[0-9]+/",
+          "event": "/http:\\/\\/[a-zA-Z0-9.]+:[0-9]+/",
           "kill": true
         }, {
           "event": "/errno/i",
@@ -121,6 +141,8 @@ module.exports = async (kernel, info) => {
         }]
       }
     },
+
+    // 8) Workflows (igual que tu script)
     {
       method: "shell.run",
       params: {
@@ -140,6 +162,7 @@ module.exports = async (kernel, info) => {
       }
     }
   ]
+
   return {
     run,
     requires: {
