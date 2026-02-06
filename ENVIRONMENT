@@ -2,7 +2,6 @@
 # ============================
 # Inteliweb AI - Install options
 # ============================
-
 # ComfyUI version to checkout:
 # - master  (default branch in ComfyUI repo)
 # - main    (allowed here; installer will fallback to master automatically)
@@ -12,15 +11,13 @@
 COMFY_REF=master
 
 ##########################################################################
-# Torch variant (user friendly):
+# Torch variant:
 #
 # Recommended:
-# - auto (default): picks best for your OS/GPU
+# - auto (default CU130)
 #
 # NVIDIA:
-# - 2.7.0-cu128
-# - 2.9.1-cu128
-# - 2.10.0-cu130
+# - 2.7.0-cu128 / 2.9.1-cu128 / 2.10.0-cu130
 #
 # AMD:
 # - directml        (Windows AMD)
@@ -30,6 +27,12 @@ COMFY_REF=master
 # - cpu
 ##########################################################################
 TORCH_VARIANT=auto
+
+##########################################################################
+# PYTHON Version
+# 3.10 / 3.11 / 3.12 / 3.13
+##########################################################################
+PYTHON_VARIANT=3.12
 
 ##########################################################################
 # PINOKIO_SCRIPT_AUTOLAUNCH

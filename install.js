@@ -12,12 +12,7 @@ module.exports = async (kernel, info) => {
     {
       method: "shell.run",
       params: {
-        path: "app",
-        message: [
-          "git fetch --all --tags",
-          // Try COMFY_REF first, then master, then main (so COMFY_REF=main works too)
-          "git checkout {{env.COMFY_REF || 'master'}} || git checkout master || git checkout main"
-        ]
+        message: "git clone --branch {{env.COMFY_REF || 'master'}} --depth 1 https://github.com/comfyanonymous/ComfyUI app"
       }
     },
 
@@ -46,13 +41,13 @@ module.exports = async (kernel, info) => {
         path: "app",
         message: [
           // Elegir versión objetivo
-          "uv python install 3.12",
+          "uv python install {{env.PYTHON_VARIANT || '3.12'}}",
 
           // Borrar venv (cross-platform)
           "{{ platform === 'win32' ? 'if exist env rmdir /s /q env' : 'rm -rf env' }}",
 
           // Crear venv con la versión elegida
-          "uv venv --python 3.12 env",
+          "uv venv --python {{env.PYTHON_VARIANT || '3.12'}} env",
         ],
       },
     },
@@ -66,7 +61,9 @@ module.exports = async (kernel, info) => {
         message: [
           "uv pip install -U pip setuptools wheel",
           "uv pip install -r requirements.txt",
+          "uv pip install -r custom_nodes/ComfyUI-Manager/requirements.txt",
           "uv pip install -U bitsandbytes",
+          "uv pip install -U requests"
         ],
       },
     },
@@ -169,14 +166,14 @@ module.exports = async (kernel, info) => {
         message: "git clone https://github.com/comfyanonymous/ComfyUI_examples",
         path: "app/user/default/workflows"
       }
-    },
-    {
-      method: "shell.run",
-      params: {
-        message: "git clone https://github.com/cocktailpeanut/comfy_json_workflow",
-        path: "app/user/default/workflows"
-      }
     }
+    // {
+    //   method: "shell.run",
+    //   params: {
+    //     message: "git clone https://github.com/cocktailpeanut/comfy_json_workflow",
+    //     path: "app/user/default/workflows"
+    //   }
+    // }
   ];
 
   return {
