@@ -1,10 +1,16 @@
 module.exports = async (kernel, info) => {
+
+  const comfyBranch =
+    process.env.COMFY_VER === "latest"
+      ? "master"
+      : process.env.COMFY_VER || "master"
+
   const run = [
     // 1) Clone ComfyUI into ./app
     {
       method: "shell.run",
       params: {
-        message: "git clone --branch {{env.COMFY_REF || 'master'}} --depth 1 https://github.com/comfyanonymous/ComfyUI app"
+        message: "git clone --branch ${comfyBranch} --depth 1 https://github.com/comfyanonymous/ComfyUI app"
       }
     },
 
@@ -33,13 +39,13 @@ module.exports = async (kernel, info) => {
         path: "app",
         message: [
           // Elegir versión objetivo
-          "uv python install {{env.PYTHON_VARIANT || '3.12'}}",
+          "uv python install {{env.PYTHON_VER || '3.12'}}",
 
           // Borrar venv (cross-platform)
           "{{ platform === 'win32' ? 'if exist env rmdir /s /q env' : 'rm -rf env' }}",
 
           // Crear venv con la versión elegida
-          "uv venv --python {{env.PYTHON_VARIANT || '3.12'}} env",
+          "uv venv --python {{env.PYTHON_VER || '3.12'}} env",
         ],
       },
     },

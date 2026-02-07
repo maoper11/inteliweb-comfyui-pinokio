@@ -1,8 +1,8 @@
 const path = require('path')
 module.exports = {
   version: "3.7",
-  title: "Comfyui",
-  description: "The most powerful and modular diffusion model GUI, api and backend with a graph/nodes interface. https://github.com/comfyanonymous/ComfyUI",
+  title: "ComfyUI",
+  description: "One-click ComfyUI + Torch + Python installer by Inteliweb AI. https://github.com/Comfy-Org",
   icon: "icon.jpeg",
   menu: async (kernel, info) => {
     let installed = info.exists("app/env")
