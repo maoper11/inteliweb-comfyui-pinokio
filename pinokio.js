@@ -1,6 +1,6 @@
 const path = require('path')
 module.exports = {
-  version: "3.7",
+  version: "1.0",
   title: "ComfyUI",
   description: "One-click ComfyUI + Torch + Python installer by Inteliweb AI. https://github.com/Comfy-Org",
   icon: "icon.jpeg",
