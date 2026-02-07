@@ -1,18 +1,14 @@
 module.exports = async (kernel, info) => {
 
-  const comfyBranch =
-    process.env.COMFY_VER === "latest"
-      ? "master"
-      : process.env.COMFY_VER || "master"
-
   const run = [
     // 1) Clone ComfyUI into ./app
     {
       method: "shell.run",
       params: {
-        message: "git clone --branch ${comfyBranch} --depth 1 https://github.com/comfyanonymous/ComfyUI app"
+        message: "git clone --branch {{ (String(env.COMFY_VER || 'latest').toLowerCase() === 'latest') ? 'master' : env.COMFY_VER }} --depth 1 https://github.com/comfyanonymous/ComfyUI app"
       }
     },
+
 
     // 2) Optional examples repo (workflows)
     // {
