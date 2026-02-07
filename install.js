@@ -9,13 +9,13 @@ module.exports = async (kernel, info) => {
     },
 
     // 2) Optional examples repo (workflows)
-    {
-      method: "shell.run",
-      params: {
-        message: "git clone https://github.com/comfyanonymous/ComfyUI_examples",
-        path: "workflows"
-      }
-    },
+    // {
+    //   method: "shell.run",
+    //   params: {
+    //     message: "git clone https://github.com/comfyanonymous/ComfyUI_examples",
+    //     path: "workflows"
+    //   }
+    // },
 
     // 3) ComfyUI-Manager
     {
@@ -149,16 +149,16 @@ module.exports = async (kernel, info) => {
           { event: "/error:/i", break: false }
         ]
       }
-    },
+    }
 
     // 10) Optional extra workflows
-    {
-      method: "shell.run",
-      params: {
-        message: "git clone https://github.com/comfyanonymous/ComfyUI_examples",
-        path: "app/user/default/workflows"
-      }
-    }
+    // {
+    //   method: "shell.run",
+    //   params: {
+    //     message: "git clone https://github.com/comfyanonymous/ComfyUI_examples",
+    //     path: "app/user/default/workflows"
+    //   }
+    // }
     // {
     //   method: "shell.run",
     //   params: {
