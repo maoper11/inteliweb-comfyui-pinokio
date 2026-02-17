@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Restart Required · ComfyUI</title>
+  <link rel="icon" href="icon.jpeg?raw=true" />
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --panel:rgba(255,255,255,.06);
+      --txt:#e8eef6;
+      --muted:rgba(232,238,246,.72);
+      --accent:#7cf6c7;
+      --border:rgba(255,255,255,.12);
+      --shadow: 0 20px 60px rgba(0,0,0,.55);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      background:
+        radial-gradient(1200px 600px at 20% 10%, rgba(124,246,199,.10), transparent 55%),
+        radial-gradient(900px 500px at 85% 15%, rgba(120,160,255,.10), transparent 55%),
+        var(--bg);
+      color:var(--txt);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      padding:32px 18px;
+    }
+    .card{
+      width:min(920px, 100%);
+      border:1px solid var(--border);
+      background:linear-gradient(180deg, var(--panel), rgba(255,255,255,.03));
+      box-shadow:var(--shadow);
+      border-radius:18px;
+      overflow:hidden;
+    }
+    .top{
+      display:flex;
+      align-items:center;
+      gap:16px;
+      padding:22px;
+      border-bottom:1px solid var(--border);
+    }
+    .logo{
+      width:44px;height:44px;border-radius:12px;
+      border:1px solid var(--border);
+      overflow:hidden;
+    }
+    .logo img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+    .title h1{
+      margin:0;
+      font-size:16px;
+      font-weight:650;
+    }
+    .title p{
+      margin:0;
+      font-size:13px;
+      color:var(--muted);
+    }
+    .body{
+      padding:34px 26px;
+      display:grid;
+      gap:22px;
+    }
+
+    /* 🔥 MAIN TITLE — now soft white */
+    .main-title{
+      font-size:56px;
+      font-weight:800;
+      margin:0;
+      line-height:1.05;
+      letter-spacing:.5px;
+      color:#f2f6ff;
+      text-shadow:0 2px 10px rgba(0,0,0,.35);
+    }
+
+    .subtitle{
+      font-size:18px;
+      font-weight:600;
+      margin:0;
+    }
+    .desc{
+      color:var(--muted);
+      max-width:70ch;
+      font-size:14px;
+    }
+    .steps{
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:16px;
+      display:grid;
+      gap:10px;
+      background:rgba(0,0,0,.22);
+    }
+    .step{
+      font-size:14px;
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+    }
+    kbd{
+      font-family:monospace;
+      padding:2px 8px;
+      border-radius:8px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.06);
+    }
+
+    .footer{
+      padding:16px 22px;
+      border-top:1px solid var(--border);
+      font-size:12px;
+      color:var(--muted);
+      display:flex;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+
+    /* 🚀 High-visibility link */
+    .footer a{
+      color:var(--accent);
+      font-weight:600;
+      text-decoration:none;
+      padding:4px 10px;
+      border-radius:8px;
+      border:1px solid rgba(124,246,199,.35);
+      background:rgba(124,246,199,.08);
+      box-shadow:0 0 12px rgba(124,246,199,.25);
+      transition:.2s ease;
+    }
+    .footer a:hover{
+      background:rgba(124,246,199,.18);
+      box-shadow:0 0 18px rgba(124,246,199,.45);
+      transform:translateY(-1px);
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <header class="top">
+      <div class="logo">
+        <img src="icon.jpeg?raw=true" alt="">
+      </div>
+      <div class="title">
+        <h1>ComfyUI</h1>
+        <p>Additional dependencies were installed</p>
+      </div>
+    </header>
+
+    <section class="body">
+      <h2 class="main-title">Restart Required</h2>
+
+      <p class="subtitle">
+        One more restart is needed to finish setup
+      </p>
+
+      <p class="desc">
+        ComfyUI-Manager likely installed new Python packages and needs a full restart to apply them correctly.
+        This is normal behavior and only happens when new dependencies are added.
+      </p>
+
+      <div class="steps">
+        <div class="step">✅ <strong>Step 1:</strong>&nbsp;Click <kbd>Terminal (Stop)</kbd> in Pinokio</div>
+        <div class="step">✅ <strong>Step 2:</strong>&nbsp;Click <kbd>Start</kbd> again</div>
+        <div class="step">✅ <strong>Step 3:</strong>&nbsp;ComfyUI will open normally</div>
+      </div>
+
+      <p class="desc">
+        If this keeps appearing without installing anything new, check ComfyUI-Manager logs or custom nodes that auto-install packages.
+      </p>
+    </section>
+
+    <footer class="footer">
+      <span>System notice</span>
+      <span><a href="https://www.youtube.com/@InteliwebAI" target="_blank">Inteliweb AI</a></span>
+    </footer>
+  </main>
+</body>
+</html>
