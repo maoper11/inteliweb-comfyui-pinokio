@@ -1,15 +1,23 @@
+// Script 1 (Modo A) — Básico, compatible con todo
+// - Sin xformers / flash / sage
+// - Con --no-deps (entorno controlado)
+// - Auto NVIDIA: RTX50->cu130, resto->cu128
+// - AMD Linux auto => CPU (ROCm solo explícito)
+// - macOS soportado
+
 module.exports = {
   run: [
-    // -----------------------------
-    // Helper step: remove old torch
-    // -----------------------------
+
+    // ------------------------------------------------------------
+    // Limpiar torch previo + actualizar pip
+    // ------------------------------------------------------------
     {
       method: "shell.run",
       params: {
         venv: "{{args && args.venv ? args.venv : null}}",
         path: "{{args && args.path ? args.path : '.'}}",
         message: [
-          "python -m pip uninstall -y torch torchvision torchaudio || exit /b 0",
+          "python -m pip uninstall -y torch torchvision torchaudio || true",
           "python -m pip install -U pip"
         ]
       }
@@ -19,9 +27,9 @@ module.exports = {
     // WINDOWS NVIDIA
     // ============================================================
 
-    // auto cu130
+    // AUTO + RTX 50 => cu130
     {
-      when: "{{platform === 'win32' && gpu === 'nvidia' && (['','auto'].includes(String(env.TORCH_VARIANT||'auto').toLowerCase()))}}",
+      when: "{{platform === 'win32' && gpu === 'nvidia' && (['','auto'].includes(String(env.TORCH_VARIANT||'auto').toLowerCase())) && kernel.gpu_model && /50[0-9]{2}/.test(kernel.gpu_model)}}",
       method: "shell.run",
       params: {
         venv: "{{args && args.venv ? args.venv : null}}",
@@ -32,9 +40,22 @@ module.exports = {
       }
     },
 
-    // explicit 2.10.0-cu130 
+    // AUTO + resto => cu128
     {
-      when: "{{platform === 'win32' && gpu === 'nvidia' && (String(env.TORCH_VARIANT||'').toLowerCase() === '2.10.0-cu130')}}",
+      when: "{{platform === 'win32' && gpu === 'nvidia' && (['','auto'].includes(String(env.TORCH_VARIANT||'auto').toLowerCase())) && (!kernel.gpu_model || !/50[0-9]{2}/.test(kernel.gpu_model))}}",
+      method: "shell.run",
+      params: {
+        venv: "{{args && args.venv ? args.venv : null}}",
+        path: "{{args && args.path ? args.path : '.'}}",
+        message: [
+          "python -m pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128 --force-reinstall --no-deps"
+        ]
+      }
+    },
+
+    // Explicit cu130
+    {
+      when: "{{platform === 'win32' && gpu === 'nvidia' && String(env.TORCH_VARIANT||'').toLowerCase()==='2.10.0-cu130'}}",
       method: "shell.run",
       params: {
         venv: "{{args && args.venv ? args.venv : null}}",
@@ -45,9 +66,9 @@ module.exports = {
       }
     },
 
-    // explicit 2.9.1-cu128
+    // Explicit cu128
     {
-      when: "{{platform === 'win32' && gpu === 'nvidia' && (String(env.TORCH_VARIANT||'').toLowerCase() === '2.9.1-cu128')}}",
+      when: "{{platform === 'win32' && gpu === 'nvidia' && String(env.TORCH_VARIANT||'').toLowerCase()==='2.9.1-cu128'}}",
       method: "shell.run",
       params: {
         venv: "{{args && args.venv ? args.venv : null}}",
@@ -58,26 +79,12 @@ module.exports = {
       }
     },
 
-    // explicit 2.7.0-cu128
-    {
-      when: "{{platform === 'win32' && gpu === 'nvidia' && (String(env.TORCH_VARIANT||'').toLowerCase() === '2.7.0-cu128')}}",
-      method: "shell.run",
-      params: {
-        venv: "{{args && args.venv ? args.venv : null}}",
-        path: "{{args && args.path ? args.path : '.'}}",
-        message: [
-          "python -m pip install torch==2.7.0 torchvision==0.22.0 torchaudio==2.7.0 --index-url https://download.pytorch.org/whl/cu128 --force-reinstall --no-deps"
-        ]
-      }
-    },
-
     // ============================================================
-    // LINUX NVIDIA
+    // LINUX NVIDIA (misma lógica)
     // ============================================================
 
-    // auto cu130
     {
-      when: "{{platform === 'linux' && gpu === 'nvidia' && (['','auto'].includes(String(env.TORCH_VARIANT||'auto').toLowerCase()))}}",
+      when: "{{platform === 'linux' && gpu === 'nvidia' && (['','auto'].includes(String(env.TORCH_VARIANT||'auto').toLowerCase())) && kernel.gpu_model && /50[0-9]{2}/.test(kernel.gpu_model)}}",
       method: "shell.run",
       params: {
         venv: "{{args && args.venv ? args.venv : null}}",
@@ -88,28 +95,42 @@ module.exports = {
       }
     },
 
-    // explicit 2.7.0-cu128
     {
-      when: "{{platform === 'linux' && gpu === 'nvidia' && (String(env.TORCH_VARIANT||'').toLowerCase() === '2.7.0-cu128')}}",
+      when: "{{platform === 'linux' && gpu === 'nvidia' && (['','auto'].includes(String(env.TORCH_VARIANT||'auto').toLowerCase())) && (!kernel.gpu_model || !/50[0-9]{2}/.test(kernel.gpu_model))}}",
       method: "shell.run",
       params: {
         venv: "{{args && args.venv ? args.venv : null}}",
         path: "{{args && args.path ? args.path : '.'}}",
         message: [
-          "python -m pip install torch==2.7.0 torchvision==0.22.0 torchaudio==2.7.0 --index-url https://download.pytorch.org/whl/cu128 --force-reinstall --no-deps"
+          "python -m pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128 --force-reinstall --no-deps"
         ]
       }
     },
 
-    // explicit 2.10.0-cu130
+    // ============================================================
+    // macOS
+    // ============================================================
+
     {
-      when: "{{platform === 'linux' && gpu === 'nvidia' && (String(env.TORCH_VARIANT||'').toLowerCase() === '2.10.0-cu130')}}",
+      when: "{{platform === 'darwin' && arch === 'arm64'}}",
       method: "shell.run",
       params: {
         venv: "{{args && args.venv ? args.venv : null}}",
         path: "{{args && args.path ? args.path : '.'}}",
         message: [
-          "python -m pip install torch==2.10.0 torchvision==0.25.0 torchaudio==2.10.0 --index-url https://download.pytorch.org/whl/cu130 --force-reinstall --no-deps"
+          "python -m pip install torch torchvision torchaudio --force-reinstall --no-deps"
+        ]
+      }
+    },
+
+    {
+      when: "{{platform === 'darwin' && arch === 'x64'}}",
+      method: "shell.run",
+      params: {
+        venv: "{{args && args.venv ? args.venv : null}}",
+        path: "{{args && args.path ? args.path : '.'}}",
+        message: [
+          "python -m pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu --force-reinstall --no-deps"
         ]
       }
     },
@@ -117,6 +138,7 @@ module.exports = {
     // ============================================================
     // WINDOWS AMD (DirectML)
     // ============================================================
+
     {
       when: "{{platform === 'win32' && gpu === 'amd' && (['','auto','directml'].includes(String(env.TORCH_VARIANT||'auto').toLowerCase()))}}",
       method: "shell.run",
@@ -124,16 +146,31 @@ module.exports = {
         venv: "{{args && args.venv ? args.venv : null}}",
         path: "{{args && args.path ? args.path : '.'}}",
         message: [
-          "python -m pip install torch-directml torchvision torchaudio numpy==1.26.4 --force-reinstall"
+          "python -m pip install torch-directml torchvision torchaudio numpy==1.26.4 --force-reinstall --no-deps"
         ]
       }
     },
 
     // ============================================================
-    // LINUX AMD (ROCm 6.3)
+    // LINUX AMD
     // ============================================================
+
+    // Auto => CPU
     {
-      when: "{{platform === 'linux' && gpu === 'amd' && (['','auto','2.7.0-rocm6.3'].includes(String(env.TORCH_VARIANT||'auto').toLowerCase()))}}",
+      when: "{{platform === 'linux' && gpu === 'amd' && (['','auto'].includes(String(env.TORCH_VARIANT||'auto').toLowerCase()))}}",
+      method: "shell.run",
+      params: {
+        venv: "{{args && args.venv ? args.venv : null}}",
+        path: "{{args && args.path ? args.path : '.'}}",
+        message: [
+          "python -m pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu --force-reinstall --no-deps"
+        ]
+      }
+    },
+
+    // Explicit ROCm
+    {
+      when: "{{platform === 'linux' && gpu === 'amd' && String(env.TORCH_VARIANT||'').toLowerCase()==='2.7.0-rocm6.3'}}",
       method: "shell.run",
       params: {
         venv: "{{args && args.venv ? args.venv : null}}",
@@ -145,10 +182,11 @@ module.exports = {
     },
 
     // ============================================================
-    // CPU
+    // CPU fallback universal
     // ============================================================
+
     {
-      when: "{{(['cpu'].includes(String(env.TORCH_VARIANT||'').toLowerCase())) || ((String(env.TORCH_VARIANT||'auto').toLowerCase()==='auto') && (gpu !== 'nvidia' && gpu !== 'amd'))}}",
+      when: "{{String(env.TORCH_VARIANT||'').toLowerCase()==='cpu'}}",
       method: "shell.run",
       params: {
         venv: "{{args && args.venv ? args.venv : null}}",
@@ -160,7 +198,7 @@ module.exports = {
     },
 
     // ------------------------------------------------------------
-    // Sanity check (prints torch + cuda availability)
+    // Sanity check final
     // ------------------------------------------------------------
     {
       method: "shell.run",
@@ -168,9 +206,10 @@ module.exports = {
         venv: "{{args && args.venv ? args.venv : null}}",
         path: "{{args && args.path ? args.path : '.'}}",
         message: [
-          "python -c \"import torch; print('torch', torch.__version__); print('cuda_available', torch.cuda.is_available()); print('cuda_version', torch.version.cuda)\""
+          "python -c \"import torch; print('torch', torch.__version__); print('cuda_available', torch.cuda.is_available()); print('cuda_version', torch.version.cuda); print('mps_available', hasattr(torch.backends,'mps') and torch.backends.mps.is_available()); print('hip_version', getattr(torch.version,'hip',None))\""
         ]
       }
     }
+
   ]
 };

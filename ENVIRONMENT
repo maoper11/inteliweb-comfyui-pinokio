@@ -1,40 +1,70 @@
 ##########################################################################
-# Inteliweb AI - ComfyUI Pinokio Installer
-# ------------------------------------------------------------------------ 
-# YouTube: https://www.youtube.com/@InteliwebAI
-# ------------------------------------------------------------------------
-# Learn AI workflows, ComfyUI, virtual models & automation
-# ------------------------------------------------------------------------
-##########################################################################
+# --------------------------------------------------
+# Inteliweb AI — ComfyUI Pinokio Installer
+# https://www.youtube.com/@InteliwebAI
+# --------------------------------------------------
+# QUICK START (recommended for most users):
+#
+# COMFY_VER=latest
+# PYTHON_VER=3.12
+# TORCH_VARIANT=auto
+#
+# 👉 This will automatically pick the best Config for your GPU
+# --------------------------------------------------
 
 ##########################################################################
+# COMFYUI VERSION
 #
-# ComfyUI Version:
-# - latest  (latest version)
-# - a tag (e.g. v0.12.0)
+# Use:
+# - latest        → always newest stable version (RECOMMENDED)
+# - v0.12.0       → specific release tag (example)
+#
+# Examples:
+# COMFY_VER=latest
+# COMFY_VER=v0.12.0
 ##########################################################################
 COMFY_VER=latest
 
+
 ##########################################################################
-# PYTHON Version
-# 3.10 / 3.11 / 3.12 / 3.13
+# PYTHON VERSION
+#
+# Allowed values:
+# 3.10   (compatibility with old nodes)
+# 3.11
+# 3.12   (RECOMMENDED)
+# 3.13   
+#
+# Example:
+# PYTHON_VER=3.12
 ##########################################################################
 PYTHON_VER=3.12
 
+
 ##########################################################################
-# Torch Variant:
+# TORCH_VARIANT — GPU / CUDA SELECTION
 #
-# Recommended:
-# - auto (default cu130)
+# Allowed values:
 #
-# NVIDIA: 2.7.0-cu128 / 2.9.1-cu128 / 2.10.0-cu130
+# 👉 RECOMMENDED (auto detects best option for your GPU):
+# - auto
+#
+# NVIDIA (Windows / Linux):
+# - 2.9.1-cu128     (recommended for RTX 20/30/40)
+# - 2.10.0-cu130    (recommended for RTX 50)
 #
 # AMD:
 # - directml        (Windows AMD)
-# - 2.7.0-rocm6.3   (Linux AMD)
+# - 2.7.0-rocm6.3   (Linux AMD, ONLY if your GPU supports ROCm)
 #
 # CPU:
 # - cpu
+#
+# macOS:
+# Leave as: auto
+# - Apple Silicon (M-series) → installs torch with MPS automatically
+# - Intel Mac → installs CPU version automatically
+#
 ##########################################################################
 TORCH_VARIANT=auto
 
