@@ -101,10 +101,11 @@ module.exports = async (kernel, info) => {
 
         },
         peers: [
+          "https://github.com/maoper11/inteliweb-comfyui.git",
+          "https://github.com/cocktailpeanutlabs/comfyui.git",
           "https://github.com/cocktailpeanut/fluxgym.git",
           "https://github.com/cocktailpeanutlabs/automatic1111.git",
           "https://github.com/cocktailpeanutlabs/fooocus.git",
-          "https://github.com/cocktailpeanutlabs/comfyui.git",
           "https://github.com/pinokiofactory/stable-diffusion-webui-forge.git"
         ]
       }
@@ -114,7 +115,15 @@ module.exports = async (kernel, info) => {
     {
       method: "fs.link",
       params: {
-        drive: { output: "app/output" }
+        drive: { output: "app/output" },
+        peers: [
+          "https://github.com/maoper11/inteliweb-comfyui.git",
+          "https://github.com/cocktailpeanutlabs/comfyui.git",
+          "https://github.com/cocktailpeanut/fluxgym.git",
+          "https://github.com/cocktailpeanutlabs/automatic1111.git",
+          "https://github.com/cocktailpeanutlabs/fooocus.git",
+          "https://github.com/pinokiofactory/stable-diffusion-webui-forge.git"
+        ]
       }
     },
 
